@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <!-- iOS Home Screen & Status Bar -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Dashboard Keuangan" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Keuangan By Raychiko</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#0d6efd" />
+  </head>
+  <body class="bg-gray-50 text-gray-800">
+    <div class="min-h-screen flex flex-col items-center p-4">
+      <div class="w-full max-w-6xl">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold">📊 Dashboard Keuangan By Raychiko</h1>
+          <button
+            id="darkToggle"
+            class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          >
+            🌙 Dark Mode
+          </button>
+        </div>
+
+        <!-- SUMMARY CARDS -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div class="p-4 rounded shadow bg-green-500 text-white text-center">
+            <h6 class="font-semibold">Total Pemasukan</h6>
+            <h3 id="totalIncome" class="text-xl font-bold">Rp 0</h3>
+          </div>
+          <div class="p-4 rounded shadow bg-red-500 text-white text-center">
+            <h6 class="font-semibold">Total Pengeluaran</h6>
+            <h3 id="totalExpense" class="text-xl font-bold">Rp 0</h3>
+          </div>
+          <div class="p-4 rounded shadow bg-blue-500 text-white text-center">
+            <h6 class="font-semibold">Sisa Saldo</h6>
+            <h3 id="balance" class="text-xl font-bold">Rp 0</h3>
+          </div>
+        </div>
+
+        <!-- FILTER -->
+        <div class="mb-6 flex justify-center">
+          <input
+            type="month"
+            id="monthFilter"
+            class="p-2 border rounded w-full md:w-1/3"
+          />
+        </div>
+
+        <!-- FORMS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div class="bg-white rounded shadow p-4 mx-auto w-full max-w-md">
+            <h2 class="font-semibold mb-2 text-center">
+              Tambah / Edit Transaksi
+            </h2>
+            <form id="form" class="space-y-2">
+              <input type="hidden" id="editIndex" />
+              <input
+                type="date"
+                id="date"
+                class="w-full p-2 border rounded"
+                required
+              />
+              <input
+                type="text"
+                id="category"
+                class="w-full p-2 border rounded"
+                placeholder="Kategori"
+                required
+              />
+              <select id="type" class="w-full p-2 border rounded">
+                <option value="income">Pemasukan</option>
+                <option value="expense">Pengeluaran</option>
+              </select>
+              <input
+                type="number"
+                id="amount"
+                class="w-full p-2 border rounded"
+                placeholder="Jumlah"
+                required
+              />
+              <button
+                type="submit"
+                class="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Simpan
+              </button>
+            </form>
+          </div>
+
+          <div class="bg-white rounded shadow p-4 mx-auto w-full max-w-md">
+            <h2 class="font-semibold mb-2 text-center">Tambah / Edit Budget</h2>
+            <form id="budgetForm" class="space-y-2">
+              <input
+                type="text"
+                id="budgetCategory"
+                class="w-full p-2 border rounded"
+                placeholder="Kategori Budget"
+                required
+              />
+              <input
+                type="number"
+                id="budgetAmount"
+                class="w-full p-2 border rounded"
+                placeholder="Jumlah Budget"
+                required
+              />
+              <button
+                type="submit"
+                class="w-full p-2 bg-green-500 text-white rounded hover:bg-green-600"
+              >
+                Simpan
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- BUDGET TABLE -->
+        <div
+          class="bg-white rounded shadow p-4 mb-6 overflow-x-auto mx-auto w-full max-w-3xl"
+        >
+          <h2 class="font-semibold mb-2 text-center">Budget per Kategori</h2>
+          <table class="w-full table-auto border-collapse text-center">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="border px-2 py-1">Kategori</th>
+                <th class="border px-2 py-1">Budget</th>
+                <th class="border px-2 py-1">Terpakai</th>
+                <th class="border px-2 py-1">Progress</th>
+                <th class="border px-2 py-1">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="budgetList"></tbody>
+          </table>
+        </div>
+
+        <!-- CHARTS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div class="bg-white rounded shadow p-4 mx-auto w-full max-w-lg">
+            <h2 class="font-semibold mb-2 text-center">Ringkasan</h2>
+            <canvas id="summaryChart"></canvas>
+          </div>
+          <div class="bg-white rounded shadow p-4 mx-auto w-full max-w-lg">
+            <h2 class="font-semibold mb-2 text-center">
+              Pengeluaran per Kategori
+            </h2>
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </div>
+
+        <!-- TRANSACTION TABLE -->
+        <div
+          class="bg-white rounded shadow p-4 mb-6 overflow-x-auto mx-auto w-full max-w-4xl"
+        >
+          <h2 class="font-semibold mb-2 text-center">Daftar Transaksi</h2>
+          <table class="w-full table-auto border-collapse text-center">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="border px-2 py-1">Tanggal</th>
+                <th class="border px-2 py-1">Kategori</th>
+                <th class="border px-2 py-1">Tipe</th>
+                <th class="border px-2 py-1">Jumlah</th>
+                <th class="border px-2 py-1">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="list"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("service-worker.js")
+          .then(() => console.log("SW terdaftar"))
+          .catch((err) => console.log("SW gagal: ", err));
+      }
+    </script>
+  </body>
+</html>

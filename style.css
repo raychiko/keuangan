@@ -1,0 +1,216 @@
+/* ===============================
+   DARK MODE TOGGLE
+=============================== */
+body.dark {
+  background-color: #1f2937;
+  color: #f3f4f6;
+}
+
+body.dark .bg-white { background-color: #374151; }
+body.dark .bg-gray-100 { background-color: #4b5563; }
+body.dark table, body.dark th, body.dark td { border-color: #6b7280; }
+body.dark .progress-bar-safe { background-color: #10b981; }
+body.dark .progress-bar-warning { background-color: #f59e0b; }
+body.dark .progress-bar-danger { background-color: #ef4444; }
+
+/* ===============================
+   INPUT DATE & MONTH
+=============================== */
+input[type="date"],
+input[type="month"] {
+  color: #000;             
+  background-color: #fff;  
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+}
+
+body.dark input[type="date"],
+body.dark input[type="month"] {
+  color: #fff !important;               
+  background-color: #374151 !important; 
+  border: 1px solid #6b7280;
+}
+
+/* ===============================
+   RESPONSIVE LAYOUT
+=============================== */
+
+/* Card container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Summary cards */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.col-md-4, .col-md-6, .col-md-3 {
+  flex: 1 1 calc(33.333% - 1rem);
+}
+
+@media (max-width: 768px) {
+  .col-md-4, .col-md-6, .col-md-3 {
+    flex: 1 1 100%;
+  }
+}
+
+/* Cards styling */
+.card {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+}
+
+body.dark .card {
+  background-color: #374151;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+/* Table responsive */
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  text-align: center;
+  color: #000; /* default light mode */
+}
+
+body.dark th, body.dark td {
+  border-color: #6b7280;
+  color: #fff !important; /* dark mode */
+}
+
+/* Progress bars */
+.progress-bar {
+  height: 1rem;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #fff; /* teks di progress bar */
+}
+
+
+.progress-bar {
+  height: 1rem;
+  border-radius: 0.25rem;
+}
+
+.progress-bar-safe { background-color: #10b981; }
+.progress-bar-warning { background-color: #f59e0b; }
+.progress-bar-danger { background-color: #ef4444; }
+
+/* Forms */
+form input, form select, form button {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #d1d5db;
+  color: #000; /* light mode */
+  background-color: #fff;
+}
+
+body.dark form input,
+body.dark form select {
+  color: #fff;
+  background-color: #4b5563;
+  border: 1px solid #6b7280;
+}
+
+form button {
+  background-color: #0d6efd;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #0b5ed7;
+}
+
+/* Chart canvas */
+canvas {
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* ===============================
+   CARD SUMMARY TEXT
+=============================== */
+.summary.income h4,
+.summary.expense h4,
+.summary.balance h4 {
+  color: #000; /* light mode */
+}
+
+body.dark .summary.income h4,
+body.dark .summary.expense h4,
+body.dark .summary.balance h4 {
+  color: #fff !important; /* dark mode */
+}
+
+/* ===============================
+   TRANSACTION & BUDGET TABLE TEXT
+=============================== */
+#transactionTable td,
+#transactionTable th,
+#budgetTable td,
+#budgetTable th {
+  color: #000; /* light mode */
+}
+
+body.dark #transactionTable td,
+body.dark #transactionTable th,
+body.dark #budgetTable td,
+body.dark #budgetTable th {
+  color: #fff !important; /* dark mode */
+}
+
+/* Highlight tipe */
+td.expense {
+  color: #ef4444; /* light mode */
+}
+body.dark td.expense {
+  color: #fca5a5; /* dark mode */
+}
+
+td.income {
+  color: #10b981; /* light mode */
+}
+body.dark td.income {
+  color: #6ee7b7; /* dark mode */
+}
+
+.progress-percentage {
+  position: absolute;
+  left: 50%;
+  top: 0.125rem; /* sedikit turun dari atas */
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #111; /* default untuk light mode */
+}
+
+body.dark .progress-percentage {
+  color: #f3f4f6; /* terang untuk dark mode */
+}
