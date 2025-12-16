@@ -6,20 +6,34 @@ body.dark {
   color: #f3f4f6;
 }
 
-body.dark .bg-white { background-color: #374151; }
-body.dark .bg-gray-100 { background-color: #4b5563; }
-body.dark table, body.dark th, body.dark td { border-color: #6b7280; }
-body.dark .progress-bar-safe { background-color: #10b981; }
-body.dark .progress-bar-warning { background-color: #f59e0b; }
-body.dark .progress-bar-danger { background-color: #ef4444; }
+body.dark .bg-white {
+  background-color: #374151;
+}
+body.dark .bg-gray-100 {
+  background-color: #4b5563;
+}
+body.dark table,
+body.dark th,
+body.dark td {
+  border-color: #6b7280;
+}
+body.dark .progress-bar-safe {
+  background-color: #10b981;
+}
+body.dark .progress-bar-warning {
+  background-color: #f59e0b;
+}
+body.dark .progress-bar-danger {
+  background-color: #ef4444;
+}
 
 /* ===============================
    INPUT DATE & MONTH
 =============================== */
 input[type="date"],
 input[type="month"] {
-  color: #000;             
-  background-color: #fff;  
+  color: #000;
+  background-color: #fff;
   border: 1px solid #d1d5db;
   border-radius: 0.25rem;
   padding: 0.5rem;
@@ -27,8 +41,8 @@ input[type="month"] {
 
 body.dark input[type="date"],
 body.dark input[type="month"] {
-  color: #fff !important;               
-  background-color: #374151 !important; 
+  color: #fff !important;
+  background-color: #374151 !important;
   border: 1px solid #6b7280;
 }
 
@@ -50,12 +64,16 @@ body.dark input[type="month"] {
   gap: 1rem;
 }
 
-.col-md-4, .col-md-6, .col-md-3 {
+.col-md-4,
+.col-md-6,
+.col-md-3 {
   flex: 1 1 calc(33.333% - 1rem);
 }
 
 @media (max-width: 768px) {
-  .col-md-4, .col-md-6, .col-md-3 {
+  .col-md-4,
+  .col-md-6,
+  .col-md-3 {
     flex: 1 1 100%;
   }
 }
@@ -65,13 +83,13 @@ body.dark input[type="month"] {
   background-color: #fff;
   border-radius: 0.5rem;
   padding: 1rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 1rem;
 }
 
 body.dark .card {
   background-color: #374151;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
 /* Table responsive */
@@ -85,14 +103,16 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
   padding: 0.5rem;
   border: 1px solid #d1d5db;
   text-align: center;
   color: #000; /* default light mode */
 }
 
-body.dark th, body.dark td {
+body.dark th,
+body.dark td {
   border-color: #6b7280;
   color: #fff !important; /* dark mode */
 }
@@ -109,18 +129,25 @@ body.dark th, body.dark td {
   color: #fff; /* teks di progress bar */
 }
 
-
 .progress-bar {
   height: 1rem;
   border-radius: 0.25rem;
 }
 
-.progress-bar-safe { background-color: #10b981; }
-.progress-bar-warning { background-color: #f59e0b; }
-.progress-bar-danger { background-color: #ef4444; }
+.progress-bar-safe {
+  background-color: #10b981;
+}
+.progress-bar-warning {
+  background-color: #f59e0b;
+}
+.progress-bar-danger {
+  background-color: #ef4444;
+}
 
 /* Forms */
-form input, form select, form button {
+form input,
+form select,
+form button {
   width: 100%;
   padding: 0.5rem;
   margin-bottom: 0.5rem;
@@ -213,4 +240,43 @@ body.dark td.income {
 
 body.dark .progress-percentage {
   color: #f3f4f6; /* terang untuk dark mode */
+}
+
+/* ==============================
+   MOBILE FIX (ANTI MIRING)
+============================== */
+body {
+  overflow-x: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Chart agar tidak maksa lebar */
+canvas {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  th,
+  td {
+    font-size: 12px;
+    padding: 6px;
+    white-space: nowrap;
+  }
+
+  .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
 }
