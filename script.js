@@ -1,6 +1,3 @@
-/* ======================================================
-   ELEMENTS
-====================================================== */
 const form = document.getElementById("form");
 const budgetForm = document.getElementById("budgetForm");
 const list = document.getElementById("list");
@@ -12,28 +9,15 @@ const balanceEl = document.getElementById("balance");
 const darkToggle = document.getElementById("darkToggle");
 const editIndexEl = document.getElementById("editIndex");
 
-const dateInput = document.getElementById("date");
-const categoryInput = document.getElementById("category");
-const nameInput = document.getElementById("name");
-const typeInput = document.getElementById("type");
-const amountInput = document.getElementById("amount");
-
-/* ======================================================
-   DATA
-====================================================== */
 let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
 let budgets = JSON.parse(localStorage.getItem("budgets")) || {};
-
 let summaryChart, categoryChart;
 
-/* ======================================================
-   HELPERS
-====================================================== */
-const normalize = (text) => text.trim().toLowerCase();
-
-const saveTransactions = () =>
+/* ================= HELPERS ================= */
+const normalize = (t) => t.trim().toLowerCase();
+const rupiah = (n) => `Rp ${n.toLocaleString("id-ID")}`;
+const saveTx = () =>
   localStorage.setItem("transactions", JSON.stringify(transactions));
-
 const saveBudgets = () =>
   localStorage.setItem("budgets", JSON.stringify(budgets));
 
@@ -42,19 +26,14 @@ const filteredData = () =>
     ? transactions.filter((t) => t.date.startsWith(monthFilter.value))
     : transactions;
 
-function todayISO() {
-  return new Date().toISOString().split("T")[0];
-}
-
-/* ======================================================
-   RENDER
-====================================================== */
+/* ================= RENDER ================= */
 function render() {
   list.innerHTML = "";
   budgetList.innerHTML = "";
 
   let income = 0;
   let expense = 0;
+  let totalBudget = 0;
 
   const data = filteredData();
 
@@ -64,68 +43,58 @@ function render() {
     list.innerHTML += `
       <tr>
         <td>${t.date}</td>
+        <td>${t.title}</td>
         <td>${t.category}</td>
-        <td>${t.name || "-"}</td>
-        <td class="${t.type}">
-          ${t.type === "income" ? "Pemasukan" : "Pengeluaran"}
-        </td>
-        <td>Rp ${t.amount.toLocaleString("id-ID")}</td>
+        <td class="${t.type}">${t.type}</td>
+        <td>${rupiah(t.amount)}</td>
         <td>
-          <button class="px-1 py-0.5 bg-yellow-400 text-white rounded" onclick="editTx(${i})">✏️</button>
-          <button class="px-1 py-0.5 bg-red-500 text-white rounded" onclick="deleteTx(${i})">🗑️</button>
+          <button onclick="editTx(${i})">✏️</button>
+          <button onclick="deleteTx(${i})">🗑️</button>
         </td>
       </tr>
     `;
   });
 
-  totalIncomeEl.textContent = `Rp ${income.toLocaleString("id-ID")}`;
-  totalExpenseEl.textContent = `Rp ${expense.toLocaleString("id-ID")}`;
-  balanceEl.textContent = `Rp ${(income - expense).toLocaleString("id-ID")}`;
+  totalIncomeEl.textContent = rupiah(income);
+  totalExpenseEl.textContent = rupiah(expense);
+  balanceEl.textContent = rupiah(income - expense);
 
-  renderBudgets(data);
+  renderBudgets(data, expense, totalBudget);
   renderCharts(data, income, expense);
 }
 
-/* ======================================================
-   BUDGET
-====================================================== */
-function renderBudgets(data) {
-  budgetList.innerHTML = "";
-
+/* ================= BUDGET ================= */
+function renderBudgets(data, expense) {
   let totalBudget = 0;
-  let totalUsed = 0;
 
   Object.keys(budgets).forEach((cat) => {
+    const limit = budgets[cat];
+    totalBudget += limit;
+
     const used = data
       .filter((t) => t.type === "expense" && normalize(t.category) === cat)
       .reduce((a, b) => a + b.amount, 0);
 
-    const limit = budgets[cat];
-    const percent = limit > 0 ? Math.round((used / limit) * 100) : 0;
+    const percent = limit ? Math.round((used / limit) * 100) : 0;
+    const width = Math.min(percent, 100);
 
-    totalBudget += limit;
-    totalUsed += used;
-
-    let cls = "progress-bar-safe";
-    if (percent >= 100) cls = "progress-bar-danger";
-    else if (percent >= 80) cls = "progress-bar-warning";
+    let barColor = "bg-green-500";
+    if (percent >= 100) barColor = "bg-red-500";
+    else if (percent >= 80) barColor = "bg-yellow-400";
 
     budgetList.innerHTML += `
       <tr>
         <td>${cat}</td>
-        <td>Rp ${limit.toLocaleString("id-ID")}</td>
-        <td>Rp ${used.toLocaleString("id-ID")}</td>
+        <td>${rupiah(limit)}</td>
+        <td>${rupiah(used)}</td>
         <td>
           <div class="w-full bg-gray-200 rounded h-4 relative">
-            <div class="h-4 rounded ${cls}" style="width:${Math.min(
-      percent,
-      100
-    )}%"></div>
+            <div class="h-4 rounded ${barColor}" style="width:${width}%"></div>
             <span class="progress-percentage">${percent}%</span>
           </div>
         </td>
         <td>
-          <button class="px-1 py-0.5 bg-red-500 text-white rounded" onclick="deleteBudget('${cat}')">🗑️</button>
+          <button onclick="deleteBudget('${cat}')">🗑️</button>
         </td>
       </tr>
     `;
@@ -133,23 +102,23 @@ function renderBudgets(data) {
 
   if (Object.keys(budgets).length > 0) {
     budgetList.innerHTML += `
-      <tr class="font-bold bg-gray-100">
-        <td>TOTAL</td>
-        <td>Rp ${totalBudget.toLocaleString("id-ID")}</td>
-        <td>Rp ${totalUsed.toLocaleString("id-ID")}</td>
-        <td colspan="2"></td>
+      <tr class="bg-gray-100 font-bold">
+        <td colspan="4" class="text-right px-2">TOTAL BUDGET</td>
+        <td>${rupiah(totalBudget)}</td>
       </tr>
     `;
   }
 }
 
-/* ======================================================
-   CHARTS
-====================================================== */
+/* ================= CHARTS ================= */
 function renderCharts(data, income, expense) {
   if (summaryChart) summaryChart.destroy();
   if (categoryChart) categoryChart.destroy();
 
+  const totalBudget = Object.values(budgets).reduce((a, b) => a + b, 0);
+  const budgetJebol = expense > totalBudget && totalBudget > 0;
+
+  /* === RINGKASAN === */
   summaryChart = new Chart(document.getElementById("summaryChart"), {
     type: "doughnut",
     data: {
@@ -157,7 +126,9 @@ function renderCharts(data, income, expense) {
       datasets: [
         {
           data: [income, expense],
-          backgroundColor: ["#10b981", "#ef4444"],
+          backgroundColor: budgetJebol
+            ? ["#9ca3af", "#ef4444"] // warning merah
+            : ["#10b981", "#ef4444"],
         },
       ],
     },
@@ -165,20 +136,19 @@ function renderCharts(data, income, expense) {
       plugins: {
         tooltip: {
           callbacks: {
-            label: (ctx) =>
-              `${ctx.label}: Rp ${ctx.raw.toLocaleString("id-ID")}`,
+            label: (ctx) => `${ctx.label}: ${rupiah(ctx.parsed)}`,
           },
         },
       },
     },
   });
 
+  /* === PER KATEGORI === */
   const catMap = {};
   data
     .filter((t) => t.type === "expense")
     .forEach((t) => {
-      const key = normalize(t.category);
-      catMap[key] = (catMap[key] || 0) + t.amount;
+      catMap[t.category] = (catMap[t.category] || 0) + t.amount;
     });
 
   categoryChart = new Chart(document.getElementById("categoryChart"), {
@@ -189,7 +159,7 @@ function renderCharts(data, income, expense) {
         {
           data: Object.values(catMap),
           backgroundColor: Object.keys(catMap).map(
-            (_, i) => `hsl(${i * 60},70%,50%)`
+            (_, i) => `hsl(${i * 60},70%,55%)`
           ),
         },
       ],
@@ -198,8 +168,7 @@ function renderCharts(data, income, expense) {
       plugins: {
         tooltip: {
           callbacks: {
-            label: (ctx) =>
-              `${ctx.label}: Rp ${ctx.raw.toLocaleString("id-ID")}`,
+            label: (ctx) => `${ctx.label}: ${rupiah(ctx.parsed)}`,
           },
         },
       },
@@ -207,88 +176,65 @@ function renderCharts(data, income, expense) {
   });
 }
 
-/* ======================================================
-   FORM EVENTS
-====================================================== */
+/* ================= EVENTS ================= */
 form.addEventListener("submit", (e) => {
   e.preventDefault();
-
-  const editIdx = editIndexEl.value;
-
   const obj = {
-    date: dateInput.value,
-    category: normalize(categoryInput.value),
-    name: nameInput.value.trim(),
-    type: typeInput.value,
-    amount: Number(amountInput.value),
+    date: date.value,
+    title: title.value,
+    category: normalize(category.value),
+    type: type.value,
+    amount: Number(amount.value),
   };
 
-  if (editIdx !== "") transactions[editIdx] = obj;
-  else transactions.push(obj);
+  editIndexEl.value !== ""
+    ? (transactions[editIndexEl.value] = obj)
+    : transactions.push(obj);
 
-  saveTransactions();
-  render();
+  saveTx();
   form.reset();
   editIndexEl.value = "";
-
-  // 📅 auto set tanggal hari ini setelah simpan
-  dateInput.value = todayISO();
+  render();
 });
 
 budgetForm.addEventListener("submit", (e) => {
   e.preventDefault();
   budgets[normalize(budgetCategory.value)] = Number(budgetAmount.value);
   saveBudgets();
-  render();
   budgetForm.reset();
+  render();
 });
 
-/* ======================================================
-   ACTIONS
-====================================================== */
 function deleteTx(i) {
-  if (!confirm("Hapus transaksi?")) return;
-  transactions.splice(i, 1);
-  saveTransactions();
-  render();
+  if (confirm("Hapus transaksi?")) {
+    transactions.splice(i, 1);
+    saveTx();
+    render();
+  }
 }
 
 function editTx(i) {
   const t = filteredData()[i];
-  dateInput.value = t.date;
-  categoryInput.value = t.category;
-  nameInput.value = t.name || "";
-  typeInput.value = t.type;
-  amountInput.value = t.amount;
+  date.value = t.date;
+  title.value = t.title;
+  category.value = t.category;
+  type.value = t.type;
+  amount.value = t.amount;
   editIndexEl.value = i;
 }
 
 function deleteBudget(cat) {
-  if (!confirm("Hapus budget?")) return;
-  delete budgets[cat];
-  saveBudgets();
-  render();
+  if (confirm("Hapus budget?")) {
+    delete budgets[cat];
+    saveBudgets();
+    render();
+  }
 }
 
-/* ======================================================
-   FILTER & DARK MODE
-====================================================== */
 monthFilter.addEventListener("change", render);
-
 darkToggle.addEventListener("click", () => {
   document.body.classList.toggle("dark");
   render();
 });
 
-if (
-  window.matchMedia &&
-  window.matchMedia("(prefers-color-scheme: dark)").matches
-) {
-  document.body.classList.add("dark");
-}
-
-/* ======================================================
-   INITIAL
-====================================================== */
-dateInput.value = todayISO();
 render();
